@@ -1,0 +1,6 @@
+*
+!/*/
+!*.m
+!*.mlx
+!*.pdf
+!.gitignore
