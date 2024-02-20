@@ -1,7 +1,7 @@
 % solve u''(t) = -sin(u(t)) for 0 < t < 2pi
 % u(0) = 0.7, u(2pi) = 0.7
 %% preamble
-
+% new comment
 % BCs
 a = 0;
 b = 2*pi;
