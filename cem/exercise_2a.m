@@ -30,10 +30,7 @@ maxiter = 500;
 nplot = 10;
 error = zeros(1, maxiter);
 for iter=1:maxiter
-J = jvector(theta, alpha, beta, h);
-%theta(1) = alpha;
-%theta(end) = beta;
-
+J = jmatrix(theta, [alpha beta], h);
 G = gvector(theta, [alpha beta], h);
 
 update = J\(-G);
@@ -70,7 +67,8 @@ function G = gvector(theta, bc, h)
     G = G';
 end
 % Jacobian
-function J = jvector(theta, alpha, beta, h)
+function J = jmatrix(theta, bc, h)
+alpha = bc(1); beta = bc(2);
 m = length(theta);
 % function is problem specific
 j = cos(theta);
