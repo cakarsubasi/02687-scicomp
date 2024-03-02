@@ -9,7 +9,7 @@ f = @(a, b) subs(f_ex, [x y], [a b]);
 %%
 u_exact = @(x, y) cos(4*pi*x.*y) + sin(4*pi*(x + y));
 %u = @(x, y) cos(2*pi*(x+y));
-f = @(x, y) - 32*pi^2*sin(4*pi*(x + y)) - 16*x.^2*pi^2*cos(4*pi*x.*y) - 16*y.^2*pi^2*cos(4*pi*x.*y);
+f = @(x, y) - 32*pi^2*sin(4*pi*(x + y)) - 16*x.^2*pi^2.*cos(4*pi*x.*y) - 16*y.^2*pi^2.*cos(4*pi*x.*y);
 %f = @(x, y) -8*pi*pi*cos(2*pi*(x+y));
 %% BCs
 a = 0;
