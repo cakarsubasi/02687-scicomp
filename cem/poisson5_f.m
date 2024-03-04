@@ -2,7 +2,7 @@ function func = poisson5_f(m)
 %POISSON5_F 5-point poisson represented as a computational graph
 %   Detailed explanation goes here
 % We are trying to compute a matrix multiplication that looks like this:
-% [ A B 0 0 0 ] [x1]
+% [ A B 0 0 0 ] [x1-xm]
 % [ B A B 0 0 ] [...]
 % [ 0 B A B 0 ] [...]
 % [ 0 0 B A B ] [...]

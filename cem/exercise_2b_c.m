@@ -1,16 +1,7 @@
-syms x y
-u = sin(4*pi*(x+y)) + cos(4*pi*x.*y);
-u_xx = diff(u, x, 2);
-u_yy = diff(u, y, 2);
-f_ex = u_xx + u_yy;
-
-u_exact = @(a, b) subs(u, [x y], [a b]);
-f = @(a, b) subs(f_ex, [x y], [a b]);
-%%
+% exact solution
 u_exact = @(x, y) cos(4*pi*x.*y) + sin(4*pi*(x + y));
-%u = @(x, y) cos(2*pi*(x+y));
+% u_xx + u_yy (right hand side function)
 f = @(x, y) - 32*pi^2*sin(4*pi*(x + y)) - 16*x.^2*pi^2.*cos(4*pi*x.*y) - 16*y.^2*pi^2.*cos(4*pi*x.*y);
-%f = @(x, y) -8*pi*pi*cos(2*pi*(x+y));
 %% BCs
 a = 0;
 b = 1;
@@ -35,7 +26,6 @@ u_solution = u_exact(X, Y);
 %%
 rhs = f(Xint, Yint);
 
-
 % adjust the rhs to include boundary terms:
 rhs(:,1) = rhs(:,1) - u_solution(Xindices, 1)/h^2;
 rhs(:,m) = rhs(:,m) - u_solution(Xindices,m+2)/h^2;
@@ -45,9 +35,7 @@ rhs(m,:) = rhs(m,:) - u_solution(m+2,Yindices)/h^2;
 %%
 rhs = reshape(rhs, m*m, 1);
 
-
 u_est = A\rhs;
-
 
 %%
 range = 0:h:1;
