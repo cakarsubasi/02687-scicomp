@@ -31,14 +31,17 @@ rhs(:,m) = rhs(:,m) - u_solution(Xindices,m+2)/h^2;
 rhs(1,:) = rhs(1,:) - u_solution(1,Yindices)/h^2;
 rhs(m,:) = rhs(m,:) - u_solution(m+2,Yindices)/h^2;
 
-A = full(poisson5(m)/(m+1)^2);
 %%
-rhs = reshape(rhs, m*m, 1);
-u_est = Amult(rhs, m);
+%rhs = reshape(rhs, m*m, 1);
+%u_est = Amult(rhs, m);
 
 % 3.2
 %rhs = f(X, Y);
-%u_est = jacobis(zeros(m, m), 0.67, m, rhs);
+u_curr = zeros(m, m);
+for i = 1:2
+u_curr = jacobis(u_curr, 0.67, m, rhs);
+end
+u_est = u_curr;
 
 %%
 range = 0:h:1;
