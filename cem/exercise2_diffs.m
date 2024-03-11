@@ -9,8 +9,6 @@ f_ex = u_xx + u_yy;
 
 del_f_ex = diff(f_ex, x, 2) + diff(f_ex, y, 2);
 
-
-
 u_exact = @(a, b) subs(u, [x y], [a b]);
 f = @(a, b) subs(f_ex, [x y], [a b]);
 del_f = @(a, b) subs(del_f_ex, [x y], [a, b]); 
