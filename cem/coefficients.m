@@ -1,4 +1,6 @@
-%% exercise 1(c)
+%% exercise 1(c) and 1(d)
+% Calculate optimal coefficients using fdcoeffF and perform convergence
+% testing
 % symbolic solver:
 syms x
 f = exp(cos(x));
@@ -50,4 +52,3 @@ end
 function estimate = estimator(func, xbar, coeff, h)
     estimate = sum(coeff .* func(xbar*h))/h^2;
 end
-

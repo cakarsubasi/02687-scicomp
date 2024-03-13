@@ -1,5 +1,5 @@
 function AU = Amult(U, m)
-%AMULT Summary of this function goes here
+%AMULT Matrix-free Poisson solver
 %   For exercise 3.1
 handle = poisson5_f(m);
 

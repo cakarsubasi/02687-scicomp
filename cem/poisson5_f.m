@@ -1,6 +1,5 @@
 function func = poisson5_f(m)
 %POISSON5_F 5-point poisson represented as a computational graph
-%   Detailed explanation goes here
 % We are trying to compute a matrix multiplication that looks like this:
 % [ A B 0 0 0 ] [x1-xm]
 % [ B A B 0 0 ] [...]
@@ -8,6 +7,8 @@ function func = poisson5_f(m)
 % [ 0 0 B A B ] [...]
 % [ 0 0 0 B A ] [x_m^2]
 % (m^2 x m^2) * (m^2 x 1)
+% This function takes m and creates a function handle that is a
+% computational graph for that left multiplication.
 
 a = @(x) -4*x + [0; x(1:end-1)] + [x(2:end); 0];
 b = @(x) x;

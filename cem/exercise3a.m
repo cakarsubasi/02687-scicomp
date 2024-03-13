@@ -39,7 +39,7 @@ rhs(m,:) = rhs(m,:) - u_solution(m+2,Yindices)/h^2;
 %rhs = f(X, Y);
 u_curr = zeros(m, m);
 for i = 1:2
-u_curr = jacobis(u_curr, 0.67, m, rhs);
+u_curr = jacobis(u_curr, 0.67, m, f);
 end
 u_est = u_curr;
 
