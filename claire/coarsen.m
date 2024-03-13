@@ -1,6 +1,7 @@
 function Rc=coarsen(R,m)
   mc = (m-1)/2;
   hc = 1/(mc-1);
+  Rc = zeros(mc^2, 1);
   for ic = 1:mc
     for jc = 1:mc
       kc =(ic-1)*mc+jc;
