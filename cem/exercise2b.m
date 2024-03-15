@@ -108,20 +108,23 @@ for m = m_vals
 end
 loglog(errX,err);
 %%
-% Jacobi (WIP)
+% Jacobi smoothing
 i = 1;
 for m = m_vals
     bc = [0 1 0 1];
-    [~, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
-    u_est = reshape(jacobi(zeros(m, m), 0.67, m, f, 20, 1e-6), m, m);
+    [F, u_solution, ~] = makerhs(f, "5-point", bc, m, u_exact);
+    %F = form_rhs(m,f,u_exact); 
+    U = zeros(m*m, 1);
+    for i = 1:100
+        U = smooth(U,omega,m,F);
+    end
+    u_est = reshape(U, m, m);
 
     err(i) = sqerr(u_est, u_solution);
     errX(i) = h;
     i = i + 1;
 end
 loglog(errX,err);
-legend("9-point", "5-point", "amult")
-
 
 %% Create figure
 f = figure;
