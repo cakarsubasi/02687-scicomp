@@ -1,25 +1,8 @@
-%% exact solution and RHS
-u=@(x,y) exp(pi*x).*sin(pi*y)+0.5*(x.*y).^2;
-f=@(x,y) x.^2+y.^2;
-%u = @(x, y) cos(4*pi*x.*y) + sin(4*pi*(x + y));
-%f = @(x, y) - 32*pi^2*sin(4*pi*(x + y)) - 16*x.^2*pi^2.*cos(4*pi*x.*y) ...
-%    - 16*y.^2*pi^2.*cos(4*pi*x.*y);
-m=2^6-1;
-U =zeros(m*m,1);
-F = form_rhs(m,f,u); 
-tol = 1.0E-10;
-omega = 0.66;
+function U_sol = multigrid(U, m, F, tol)
+%MULTIGRID Summary of this function goes here
+%   Detailed explanation goes here
 
-h = 1/(m-1);
-[X,Y]=meshgrid(0:h:1);
-U_sol = u(X, Y);
-mc=(m-1)/2;
-hc = 1/(mc-1);
-U_sol_r2 = reshape(interpolate(coarsen(U_sol, m), mc), m, m);
-plotU(m, U_sol_r2);
-
-%multigrid(U, m, F, tol);
-%%
+omega = 2/3;
 
 for i=1:100
     R =F+Amult(U,m);
@@ -31,6 +14,9 @@ for i=1:100
     U=Vcycle(U,omega,3,m,F);
     plotU(m,U);
     pause(.5);
+end
+U_sol = U;
+
 end
 
 function Unew=Vcycle(U,omega,nsmooth,m,F)

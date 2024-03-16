@@ -10,6 +10,7 @@ del_f = @(x, y) 1024*pi^4*sin(4*pi*(x + y)) - 64*pi^2*cos(4*pi*x.*y) ...
 %%
 m = 50;
 bc = [0 1 0 1];
+
 [rhs, u_solution, h] = makerhs(f, "9-point", bc, m, u_exact);
 A = poisson9(m);
 u_est = reshape(A\rhs, m, m);
@@ -23,10 +24,11 @@ title("Actual solution");
 xlabel("x");
 ylabel("y");
 
-m_vals = 3:10:103;
+m_vals = 2.^(1:8); %3:10:103;
 err = zeros(size(m_vals));
 errX = zeros(size(m_vals));
 %% Graphs
+m = 50;
 % 5-point
 [rhs, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
 A = poisson5(m);
@@ -45,12 +47,41 @@ A = poisson9(m);
 u_est = reshape(A\rhs, m, m);
 plot_estimate_and_error("9-point analytic", u_est, u_solution, m, h);
 
-% Amult
+% PCG
 [rhs, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
-u_est = reshape(Amult(rhs, m), m, m);
-plot_estimate_and_error("Amult", u_est, u_solution, m, h);
-
+Afun = poisson5_f(m);
+u_est = reshape(-pcg(Afun, rhs, 1e-6, 200), m, m);
+plot_estimate_and_error("PCG", u_est, u_solution, m, h);
+%%
+omega = 0.4; %2/3;
+iters = 100;
 % Jacobi
+[F, u_solution, ~] = makerhs(f, "5-point", bc, m, u_exact);
+U = zeros(m*m, 1);
+for i = 1:iters
+    U = smooth(U,omega,m,F);
+end
+u_est = reshape(U, m, m);
+plot_estimate_and_error("Jacobi: \omega = 0.4", u_est, u_solution, m, h);
+omega = 0.66; %2/3;
+% Jacobi
+[F, u_solution, ~] = makerhs(f, "5-point", bc, m, u_exact);
+U = zeros(m*m, 1);
+for i = 1:iters
+    U = smooth(U,omega,m,F);
+end
+u_est = reshape(U, m, m);
+plot_estimate_and_error("Jacobi: \omega = 0.66", u_est, u_solution, m, h);
+omega = 0.99; %2/3;
+% Jacobi
+[F, u_solution, ~] = makerhs(f, "5-point", bc, m, u_exact);
+U = zeros(m*m, 1);
+for i = 1:iters
+    U = smooth2(U,omega,m,F);
+end
+u_est = reshape(U, m, m);
+plot_estimate_and_error("Jacobi: \omega = 0.80", u_est, u_solution, m, h);
+
 
 %% convergence test
 % 9-point
@@ -61,11 +92,11 @@ for m = m_vals
     A = poisson9(m);
     u_est = reshape(A\rhs, m, m);
 
-    err(i) = sqerr(u_est, u_solution);
+    err(i) = abserr(u_est, u_solution);
     errX(i) = h;
     i = i + 1;
 end
-plot_convergence("9-point", errX, err)
+plot_convergence("9-point direct - del2", errX, err)
 %%
 % 9-point analytic
 i = 1;
@@ -75,12 +106,11 @@ for m = m_vals
     A = poisson9(m);
     u_est = reshape(A\rhs, m, m);
 
-    err(i) = sqerr(u_est, u_solution);
+    err(i) = abserr(u_est, u_solution);
     errX(i) = h;
     i = i + 1;
 end
-loglog(errX,err);
-
+plot_convergence("9-point direct - analytic", errX, err);
 %%
 % 5-point
 i = 1;
@@ -89,47 +119,59 @@ for m = m_vals
     A = poisson5(m);
     u_est = reshape(A\rhs, m, m);
 
-    err(i) = sqerr(u_est, u_solution);
+    err(i) = abserr(u_est, u_solution);
     errX(i) = h;
     i = i + 1;
 end
-loglog(errX,err);
+plot_convergence("5-point direct", errX, err);
 %%
-% Amult
+% pcg
 i = 1;
 for m = m_vals
     bc = [0 1 0 1];
     [rhs, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
-    u_est = reshape(Amult(rhs, m), m, m);
+    Afun = poisson5_f(m);
+    u_est = reshape(-pcg(Afun, rhs, 1e-6, 20000), m, m);
 
-    err(i) = sqerr(u_est, u_solution);
+    err(i) = abserr(u_est, u_solution);
     errX(i) = h;
     i = i + 1;
 end
-loglog(errX,err);
+plot_convergence("pcg", errX, err);
+
 %%
 % Jacobi smoothing
 i = 1;
+maxiter = 20000;
 for m = m_vals
     bc = [0 1 0 1];
-    [F, u_solution, ~] = makerhs(f, "5-point", bc, m, u_exact);
-    %F = form_rhs(m,f,u_exact); 
+    [F, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
+    tol = 1e-6;
     U = zeros(m*m, 1);
-    for i = 1:100
+    for j = 1:maxiter
         U = smooth(U,omega,m,F);
+        R = F + Amult(U, m);
+        res = sum(abs(R), "all");
+        if res < tol
+            fprintf("Jacobi converged in %d iterations, residual: %f\n", j, res);
+            break;
+        elseif j == maxiter
+            fprintf("Jacobi did not converge in %d iterations, residual: %f\n", j, res);
+        end
     end
+
     u_est = reshape(U, m, m);
 
-    err(i) = sqerr(u_est, u_solution);
+    err(i) = abserr(u_est, u_solution);
     errX(i) = h;
     i = i + 1;
 end
-loglog(errX,err);
+plot_convergence("Jacobi", errX, err);
 
 %% Create figure
-f = figure;
-f.Name = "9-Point Poisson";
-f.Position = [10 450 1800 450];
+fig = figure;
+fig.Name = "9-Point Poisson";
+fig.Position = [10 450 1800 450];
 
 %
 range = 0:h:1;
@@ -151,17 +193,6 @@ range = range(2:end-1);
 [X,Y]=meshgrid(range, range);
 subplot(1,3,3);
 surf(X,Y,reshape(err, m, m));
-
-
-%%
-
-% option 1
-rhs_err1 = (h^2 / 12) * del_f(Xint, Yint);
-
-% built in operator doesn't make the mistake
-% del2 estimates 0.25*(u_xx+y_yy), so we need to multiply by 4
-rhs_err2 = (4*h^2/12)*del2(rhs, h);
-
 
 %%
 function err = sqerr(u_est, u_sol)
@@ -204,7 +235,7 @@ f = figure;
 f.Name = name;
 loglog(errX,err);
 grid on;
-title("Convergence graph");
+title(sprintf("Convergence graph: %s", name));
 xlabel("h");
 ylabel("error");
 end

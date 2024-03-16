@@ -1,6 +1,5 @@
 function Rcoarse = coarsen(R, m)
-%COARSEN Summary of this function goes here
-%   Detailed explanation goes here
+%COARSEN Coarsen a given RHS vector by one order of magnitude
 
 % coarsen
 mc = (m-1)/2;
