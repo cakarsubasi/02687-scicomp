@@ -1,13 +1,13 @@
 function Einterp = interpolate(Ecoarse, mc)
-%INTERPOLATE Summary of this function goes here
-%   Detailed explanation goes here
+%INTERPOLATE Interpolate the coarse grid by 1 step.
+%   Ecoarse: the coarse grid
+%   mc: grid points in one axis of the coarse grid
 
 m = mc*2 + 1;
 Einterp=zeros(m, m);
 Einterp(2:2:end, 2:2:end) = reshape(Ecoarse, mc, mc);
 
-%%interp2(Xq, Yq, reshape(coarsen(U_sol, m), mc, mc), X, Y);
-
+% interpolate across the x-axis
 for i=1:2:m
   if(i>1)
     e_left = Einterp(:, i-1);
@@ -21,7 +21,7 @@ for i=1:2:m
   end
   Einterp(:, i) = (e_left+e_right)/2;
 end
-
+% interpolate across the y-axis
 for i=1:2:m
   if(i>1)
     e_top = Einterp(i-1, :);

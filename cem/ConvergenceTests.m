@@ -24,7 +24,7 @@ title("Actual solution");
 xlabel("x");
 ylabel("y");
 
-m_vals = 2.^(1:8); %3:10:103;
+m_vals = 2.^(2:8) - 1; %3:10:103;
 err = zeros(size(m_vals));
 errX = zeros(size(m_vals));
 %% Graphs
@@ -52,6 +52,12 @@ plot_estimate_and_error("9-point analytic", u_est, u_solution, m, h);
 Afun = poisson5_f(m);
 u_est = reshape(-pcg(Afun, rhs, 1e-6, 200), m, m);
 plot_estimate_and_error("PCG", u_est, u_solution, m, h);
+
+% multigrid
+m = 2^6 - 1;
+[rhs, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
+[u_est, ~] = multigrid(zeros(m*m, 1), m, rhs, 1e-10, 100, false);
+plot_estimate_and_error("multigrid", u_est, u_solution, m, h);
 %%
 omega = 0.4; %2/3;
 iters = 100;
@@ -59,16 +65,17 @@ iters = 100;
 [F, u_solution, ~] = makerhs(f, "5-point", bc, m, u_exact);
 U = zeros(m*m, 1);
 for i = 1:iters
-    U = smooth(U,omega,m,F);
+    U = smooth2(U,omega,m,F);
 end
 u_est = reshape(U, m, m);
 plot_estimate_and_error("Jacobi: \omega = 0.4", u_est, u_solution, m, h);
+
 omega = 0.66; %2/3;
 % Jacobi
 [F, u_solution, ~] = makerhs(f, "5-point", bc, m, u_exact);
 U = zeros(m*m, 1);
 for i = 1:iters
-    U = smooth(U,omega,m,F);
+    U = smooth2(U,omega,m,F);
 end
 u_est = reshape(U, m, m);
 plot_estimate_and_error("Jacobi: \omega = 0.66", u_est, u_solution, m, h);
@@ -129,9 +136,10 @@ plot_convergence("5-point direct", errX, err);
 i = 1;
 for m = m_vals
     bc = [0 1 0 1];
+
     [rhs, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
     Afun = poisson5_f(m);
-    u_est = reshape(-pcg(Afun, rhs, 1e-6, 20000), m, m);
+    u_est = reshape(-pcg(Afun, rhs, 1e-6, 1000), m, m);
 
     err(i) = abserr(u_est, u_solution);
     errX(i) = h;
@@ -142,15 +150,15 @@ plot_convergence("pcg", errX, err);
 %%
 % Jacobi smoothing
 i = 1;
-maxiter = 20000;
+maxiter = 500; % raise at your own peril
 for m = m_vals
     bc = [0 1 0 1];
     [F, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
     tol = 1e-6;
     U = zeros(m*m, 1);
     for j = 1:maxiter
-        U = smooth(U,omega,m,F);
-        R = F + Amult(U, m);
+        U = smooth2(U,omega,m,F);
+        R = F + Amult(reshape(U, [m*m, 1]), m);
         res = sum(abs(R), "all");
         if res < tol
             fprintf("Jacobi converged in %d iterations, residual: %f\n", j, res);
@@ -168,6 +176,20 @@ for m = m_vals
 end
 plot_convergence("Jacobi", errX, err);
 
+%%
+% multi-grid
+i = 1;
+for m = m_vals
+    bc = [0 1 0 1];
+    [rhs, u_solution, h] = makerhs(f, "5-point", bc, m, u_exact);
+    [u_est, ~] = multigrid(zeros(m*m, 1), m, rhs, 1e-10, 100, false);
+    u_est = reshape(u_est, m, m);
+
+    err(i) = abserr(u_est, u_solution);
+    errX(i) = h;
+    i = i + 1;
+end
+plot_convergence("Multi-grid", errX, err);
 %% Create figure
 fig = figure;
 fig.Name = "9-Point Poisson";

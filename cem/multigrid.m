@@ -1,19 +1,29 @@
-function U_sol = multigrid(U, m, F, tol)
-%MULTIGRID Summary of this function goes here
-%   Detailed explanation goes here
+function [U_sol, iter] = multigrid(U, m, F, tol, maxiter, to_plot)
+%MULTIGRID Solve the Poisson problem using the multigrid method
+%   U: initial guess (size: [m^2, 1])
+%   m: number of grid points per axis (needs to be 2^n-1 for positive n
+%      integer)
+%   F: right hand side
+%   tol: tolerance
+%   maxiter: maximum number of iterations before giving up
+%   to_plot: (bool) whether to plot each iteration
 
 omega = 2/3;
-
-for i=1:100
+iter = maxiter + 1;
+for i=1:maxiter
     R =F+Amult(U,m);
+    res = norm(R,2)/norm(F,2);
     fprintf('*** Outer iteration: %3d, rel. resid.: %e\n', ...
-        i, norm(R,2)/norm(F,2));
-    if(norm(R,2)/norm(F,2) < tol)
+        i, res);
+    if(res < tol)
+        iter = i;
         break;
     end
     U=Vcycle(U,omega,3,m,F);
-    plotU(m,U);
-    pause(.5);
+    if to_plot
+        plotU(m,U);
+        pause(.5);
+    end
 end
 U_sol = U;
 

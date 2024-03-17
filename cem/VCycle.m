@@ -1,9 +1,9 @@
 %% exact solution and RHS
-u=@(x,y) exp(pi*x).*sin(pi*y)+0.5*(x.*y).^2;
-f=@(x,y) x.^2+y.^2;
-%u = @(x, y) cos(4*pi*x.*y) + sin(4*pi*(x + y));
-%f = @(x, y) - 32*pi^2*sin(4*pi*(x + y)) - 16*x.^2*pi^2.*cos(4*pi*x.*y) ...
-%    - 16*y.^2*pi^2.*cos(4*pi*x.*y);
+%u=@(x,y) exp(pi*x).*sin(pi*y)+0.5*(x.*y).^2;
+%f=@(x,y) x.^2+y.^2;
+u = @(x, y) cos(4*pi*x.*y) + sin(4*pi*(x + y));
+f = @(x, y) - 32*pi^2*sin(4*pi*(x + y)) - 16*x.^2*pi^2.*cos(4*pi*x.*y) ...
+    - 16*y.^2*pi^2.*cos(4*pi*x.*y);
 m=2^6-1;
 U =zeros(m*m,1);
 F = form_rhs(m,f,u); 
@@ -15,10 +15,37 @@ h = 1/(m-1);
 U_sol = u(X, Y);
 mc=(m-1)/2;
 hc = 1/(mc-1);
-U_sol_r2 = reshape(interpolate(coarsen(U_sol, m), mc), m, m);
+U_sol_r2 = reshape(interpolate(coarsen2(U_sol, m), mc), m, m);
 plotU(m, U_sol_r2);
 
-%multigrid(U, m, F, tol);
+%% Convergence tests
+mvals = 2.^(2:12)-1;
+convergence = zeros(size(mvals));
+time = zeros(size(mvals));
+for i = 1:length(mvals)
+    tic
+    m = mvals(i);
+    U =zeros(m*m,1);
+    F = form_rhs(m,f,u); 
+    [~, iter] = multigrid(U, m, F, tol, 200, false);
+    convergence(i) = iter;
+    time(i) = toc;
+end
+%%
+figure;
+plot(log2(mvals), convergence, "o");
+title("Number of iterations versus $$m$$", "Interpreter", "latex")
+xlabel("$$log_2 m$$", "Interpreter", "latex");
+ylabel("Number of iterations", "Interpreter", "latex");
+yticks(0:1:15);
+grid on;
+figure;
+%plot(log2(mvals), time);
+plot(mvals.^2, time, "-");
+title("Time to compute versus $$m^2$$", "Interpreter", "latex")
+xlabel("$$m^2$$", "Interpreter", "latex");
+ylabel("Time $$(s)$$", "Interpreter", "latex");
+grid on;
 %%
 
 for i=1:100
