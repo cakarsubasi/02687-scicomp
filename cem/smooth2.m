@@ -2,8 +2,6 @@ function Unew = smooth2(U, omega, m, F)
 %JACOBIS Summary of this function goes here
 % Perform Jacobi iteration
 %   Detailed explanation goes here
-% TODO. For exercise 3.2
-% need to fix the boundries
 
 Iint = 2:(m+1);
 Jint = 2:(m+1);
