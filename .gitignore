@@ -1,6 +1,10 @@
 *
-!/*/
+!/**/
 !*.m
 !*.mlx
 !*.pdf
 !.gitignore
+
+!*.jpg
+!*.png
+!*.fig
