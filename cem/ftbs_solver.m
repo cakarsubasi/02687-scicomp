@@ -11,6 +11,7 @@ function [U_new, k] = ftbs_solver(U, G, m, a)
 
 h = 2/(m+1);
 
+boundaries = [G(1) G(end)];
 % pick k values
 % left handed variant
 if a > 0
@@ -40,6 +41,8 @@ else
 end
 
 U_new = U + A*U - cons*G;
-U_new = reshape(U_new, [m, 1]);
+U_new = reshape(U_new, [1, m]);
+
+
 end
 

@@ -4,24 +4,22 @@ function [U_new, k] = ftcs_solver(U, G, m, eps, step_fac)
 %   * G: boundary values [2 x 1]
 %   * m: number of values
 %   * eps:
+%   * step_fac:
 
-h = 2/(m+1);
-k = h^2 / (2*eps);
 % pick h and k values
-cons = eps*k/h^2*step_fac;
+h = 2/(m+1);
+k = h^2 / (2*eps)*step_fac;
+cons = eps*k/h^2;
 
 U = reshape(U, [m, 1]);
 G = [G(1); zeros([m-2, 1]); G(2)];
 
 e = ones(m, 1);
 
-A = spdiags([1*e -2*e 1*e], [-1 0 1], m, m)*cons;
-%A = [zeros([1, m]); A; zeros([1, m])];
+A = spdiags([1*e -2*e 1*e], [-1 0 1], m, m);
 
-U_new = U + A*U + G*cons;
+U_new = U + A*U*cons + G*cons;
 disp(size(U_new));
-%U_new = U_new(2:end-1);
-
 
 end
 
