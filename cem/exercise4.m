@@ -3,9 +3,9 @@ u_param = @(eps) @(t, x) -tanh((x + 0.5 - t)/(2*eps)) + 1;
 u_actual = u_param(a);
 %%
 m = 100;
-points = linspace(-10, 10, m);
+points = linspace(-1, 1, m);
 U_initial = u_actual(0.0, points);
-for t=0:0.1:100
+for t=0:0.1:0
     U_actual = u_actual(t, points);
     plot(U_actual);
     pause(0.1);
@@ -16,8 +16,8 @@ end
 G = U_initial;
 G(2:end) = 0;
 
-maxstep = 2;
-plotinterval = 1;
+maxstep = 200000;
+plotinterval = 50;
 to_plot = true;
 
 err = 0;
@@ -43,9 +43,9 @@ for i = 1:maxstep
         hold on;
         plot(U_real)
         legend(["estimate", "real"]);
-        title(sprintf("time: %f, err: %f", time, err));
+        title(sprintf("iter: %d, time: %f, err: %f", i, time, err));
         hold off;
-        pause(5);
+        pause(0.01);
     end
 end
 
