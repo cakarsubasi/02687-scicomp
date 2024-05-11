@@ -8,3 +8,9 @@
 !*.jpg
 !*.png
 !*.fig
+
+# Python files
+!*.py
+!*.ipynb
+# Saved models
+!*.pt
