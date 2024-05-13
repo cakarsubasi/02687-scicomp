@@ -1,4 +1,4 @@
-function [U_new, k] = advection_solver(U, G, m, eps)
+function [U_new, k] = advection_solver(U, G, m, eps, maxk)
 %FTBS_SOLVER our ftbs solver
 %Solves problems of the form u_t(x,t) + a*u_x(x, t) = 0
 %   * U: [m, 1] previous iteration
@@ -11,7 +11,9 @@ function [U_new, k] = advection_solver(U, G, m, eps)
 
 h = 2/(m+1);
 k = h^2 / (2*eps);
-boundaries = [G(1) G(end)];
+if k > maxk
+    k = maxk;
+end
 
 e = ones(m, 1);
 z = zeros(m, 1);
