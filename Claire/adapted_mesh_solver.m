@@ -15,15 +15,16 @@ k = min(h)^2 / (2*eps);
 
 e = ones(m-1, 1);
 z = zeros(m-1, 1);
-H = sparse(1:m-1, 1:m-1, (h(1:end-1)+h(2:end))/2);
+H = sparse(1:m, 1:m, h);
 
-A1 = spdiags([z -e e], [-1 0 1], m-1, m-1);
-A2 = spdiags([-e e z], [-1 0 1], m-1, m-1);
+A1 = spdiags([z z e], [-1 0 1], m-1, m-1);
+A2 = spdiags([z e z], [-1 0 1], m-1, m-1);
+A3 = spdiags([e z z], [-1 0 1], m-1, m-1);
 U = reshape(U, [m-1 1]);
 
 %estimation of the first and second derivative of U wtr x
-dxU = (H^(-1)*A1*U.*U+H^(-1)*A2*U.*U)/2;
-dx2U =  H^(-2)*A1*U-H^(-2)*A2*U;
+dxU = (H(1:end-1, 1:end-1)+H(2:end, 2:end))^(-1)*(A1-A3)*U.*U;
+dx2U =  2*(H(1:end-1, 1:end-1)*H(2:end, 2:end)*(H(1:end-1, 1:end-1)+H(2:end, 2:end)))^(-1)*(H(1:end-1, 1:end-1)*(A1-A2)+H(2:end, 2:end)*(A3-A2))*U;
 
 G = zeros(m-1, 1);
 G(1) = -k*gL^2/H(1)+k*eps*gL/H(1)^2;
