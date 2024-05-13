@@ -1,6 +1,5 @@
 delta = 0.0002;
 rhs = @(t, y) y.^2 - y.^3;
-%rhs_u = @(t, y) 2*y - 3*y^2;
 reltol = 1.e-6;
 abstol = 1.e-4;
 
