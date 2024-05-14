@@ -18,10 +18,10 @@ err = 0;
 err_m = zeros([1 maxstep]);
 
 maxstep = 600;
-plotinterval = 10;
+plotinterval = 2;
 to_plot = true;
 tmax = 1;
-wait = 0.1;
+wait = 0.5;
 
 time = 0;
 U_new = U_initial;

@@ -19,7 +19,8 @@ end
 cons = eps*k/h^2;
 
 U = reshape(U, [m, 1]);
-G = [G(1); zeros([m-2, 1]); G(2)];
+G = [G(1); zeros([m-2, 1]); G(end)];
+
 
 e = ones(m, 1);
 

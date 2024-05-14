@@ -1,4 +1,4 @@
-function [U_new, k] = ftbs_solver(U, G, m, a)
+function [U_new, k] = ftbs_solver(U, G, m, a, kmax)
 %FTBS_SOLVER our ftbs solver
 %Solves problems of the form u_t(x,t) + a*u_x(x, t) = 0
 %   * U: [m, 1] previous iteration
@@ -11,15 +11,20 @@ function [U_new, k] = ftbs_solver(U, G, m, a)
 
 h = 2/(m+1);
 
-boundaries = [G(1) G(end)];
 % pick k values
-% left handed variant
+% left to right variant
 if a > 0
     k = h^2 / a;
-    cons = k*(-a)/h;
-% right handed variant
+    if k > kmax
+        k = kmax;
+    end
+    cons = -k*a/h;
+% right to left variant
 else
     k = h^2 / -a;
+    if k > kmax
+        k = kmax;
+    end
     cons = -k*a/h;
 end
 
@@ -29,18 +34,18 @@ G = reshape(G, [m, 1]);
 if a > 0
     e = ones(m, 1);
     z = zeros(m, 1);
-    A = spdiags([-1*e 1*e z], [-1 0 1], m, m)*cons;
+    A = spdiags([-1*e 1*e z], [-1 0 1], m, m);
     G(2:end) = 0;
 % right handed variant
 else
     e = ones(m, 1);
     z = zeros(m, 1);
-    A = spdiags([z -1*e 1*e], [-1 0 1], m, m)*cons;
+    A = spdiags([z -1*e 1*e], [-1 0 1], m, m);
     G(1:end-1) = 0;
     G(end) = -G(end);
 end
 
-U_new = U + A*U - cons*G;
+U_new = U + A*U*cons - cons*G;
 U_new = reshape(U_new, [1, m]);
 
 
