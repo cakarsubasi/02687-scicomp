@@ -29,10 +29,12 @@ tmax = 1.6037 / pi;
 time = 0.0;
 U_new = U_initial;
 for i = 1:maxstep
-    if time == tmax
-        break;
+    maxk = tmax - time;
+    if maxk == 0
+        plotmain(U_new, U_initial, i, time, wait)
+        break
     end
-    [U_new, k] = advection_solver2(U_new, G, m, a, time);
+    [U_new, k] = advection_solver(U_new, G, m, a, maxk);
     time = time + k;
 
     if mod(i, plotinterval) == 0 && to_plot

@@ -4,7 +4,7 @@ points = linspace(-1, 1, m);
 U_initial = -sin(pi*points);
 a = 0.01/pi;
 plot(U_initial);
-%%
+
 G = U_initial;
 G(1:end) = 0;
 
@@ -18,23 +18,22 @@ tmax = 1.6037 / pi;
 time = 0.0;
 U_new = U_initial;
 for i = 1:maxstep
-    if time == tmax
-        break;
+    maxk = tmax - time;
+    if maxk == 0
+        plotmain(points, U_new, U_initial, i, time, wait);
+        break
     end
-    [U_new, k] = advection_solver2(U_new, G, m, a, time);
+    [U_new, k] = advection_solver(U_new, G, m, a, maxk);
     time = time + k;
 
     if mod(i, plotinterval) == 0 && to_plot
-        plotmain(U_new, U_initial, i, time, wait)
+        plotmain(points, U_new, U_initial, i, time, wait)
     end
 end
 %%
-plotmain(points, U_new, U_initial, i, time, wait)
-fig = gcf;
-exportgraphics(fig, "ex4_2_example.pdf");
+exportgraphics(gcf, "ex4_2_example.pdf");
 
 figure;
-%U_x = diff(U_new)/(2/(m+1));
 U_x = (- U_new(1:end-2) + U_new(3:end))/(4/(m+1));
 wavebreak = min(U_x);
 plot(points(2:end-1), U_x);

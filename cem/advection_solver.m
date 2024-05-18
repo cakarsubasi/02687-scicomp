@@ -1,10 +1,11 @@
 function [U_new, k] = advection_solver(U, G, m, eps, maxk)
-%FTBS_SOLVER our ftbs solver
-%Solves problems of the form u_t(x,t) + a*u_x(x, t) = 0
+% ADVECTION_SOLVER our advection solver
+% Solves problems of the form u_t(x,t) + u(x,t)*u_x(x, t) = eps*u_xx(x,t)
 %   * U: [m, 1] previous iteration
 %   * G: [m, 1] boundary conditions, only the first or last element is used
 %   * m: size of vector
-%   * a: parameter a (determines which sided variant will be used)
+%   * eps: parameter eps
+%   * MAXK: maximum time step that can be taken
 %
 %   * U_new: new iteration
 %   * k: step taken
