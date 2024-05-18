@@ -1,4 +1,15 @@
 function T_star = picard_lindeloef(t0, t1, y0, fun)
+% PICARD_LINDELOEF apply Picard Lindeloef test using fairly arbitrary
+% parameters. This function will return an interval where a solution is
+% believed to exist, however it does not check that the input function has
+% sufficient smoothness to validate that.
+%    * T0 beginning of the interval
+%    * T1 maximum T value
+%    * Y0 initial condition
+%    * FUN function
+%
+%    * T_STAR output T value for which a solution is believed to exist
+
 T_star = 0;
 a = 0.1;
 while true

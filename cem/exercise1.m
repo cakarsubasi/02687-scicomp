@@ -1,3 +1,5 @@
+% Test and graphing script for exercise 1
+
 delta = 0.0002;
 rhs = @(t, y) y.^2 - y.^3;
 reltol = 1.e-6;

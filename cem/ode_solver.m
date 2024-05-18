@@ -4,6 +4,11 @@ function [TOUT, YOUT] = ode_solver(ODEFUN, TSPAN, Y0, reps, aeps)
 %     returns a column vector
 %   * TSPAN two element vector specifying beginning and end points
 %   * Y0 column vector of initial conditions
+%   * REPS relative error threshold
+%   * AEPS absolute error threshold
+%
+%   * TOUT output time points
+%   * YOUT output predictions
 
 tstart = TSPAN(1);
 tend = TSPAN(2);
@@ -40,6 +45,9 @@ while t_n < tend
         t_n = t_n + step;
         step = tend - t_n;
         y_n = y_new1;
+        % "allowed" step based on picard_lindeloef
+        % seems not to be fairly pointless besides just knowing that a
+        % solution exists as our error bounds take care of things
         T_star = picard_lindeloef(t_n, tend, y_n, ODEFUN);
         step = T_star;
         YOUT = cat(2, YOUT, y_new1);
