@@ -1,3 +1,4 @@
+% Exercise 4 - Nonlinear Advection Equation solver on the tanh wave
 a = 0.5;
 u_param = @(eps) @(t, x) -tanh((x + 0.5 - t)/(2*eps)) + 1;
 u_actual = u_param(a);

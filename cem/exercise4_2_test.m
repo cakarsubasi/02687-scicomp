@@ -1,3 +1,4 @@
+% Exercise 4 - Nonlinear Advection Equation convergence test on the shockwave
 exact = -152.00516;
 
 start = 3;

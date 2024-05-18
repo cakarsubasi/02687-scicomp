@@ -1,4 +1,4 @@
-%%
+% Exercise 4 - Nonlinear Advection Equation solver on the shockwave
 m = 4097;
 points = linspace(-1, 1, m);
 U_initial = -sin(pi*points);
