@@ -1,3 +1,5 @@
+% Convergence test script for exercise 2
+
 alpha = [1; 4; 16];
 a = 1;
 b = 0;
